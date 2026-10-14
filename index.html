@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de informes · DataStore CCB</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/datastore-ccb.png">
+<style>
+  :root{--teal:#08A2B7;--navy:#14213D;--panel:#F7F7F7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--panel);color:var(--navy);font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  main .wrap{padding-top:24px;padding-bottom:48px}
+</style>
+</head>
+<body>
+<main><div class="wrap">
+  <div id="ccb-screening"></div>
+</div></main>
+<script src="dist/screening.js"
+  data-lists="data/listas.json"
+  data-brand="Cámara de Comercio de Bogotá"
+  data-product="Informe de verificación en listas restrictivas"></script>
+</body>
+</html>

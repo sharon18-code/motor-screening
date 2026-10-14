@@ -1,0 +1,53 @@
+name: Actualizar listas internacionales
+
+on:
+  push:
+    branches: [main]
+    paths: ["dist/**", "scripts/**"]
+  schedule:
+    # 06:17 UTC = 01:17 hora Colombia, todos los días
+    - cron: "17 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: listas
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pruebas de los parsers
+        run: python tests/test_build_lists.py
+
+      - name: Descargar y normalizar ONU, OFAC y UE
+        run: python scripts/build_lists.py
+
+      - name: Publicar si hubo cambios
+        run: |
+          git config user.name "motor-screening-ccb"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/listas.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en las listas."
+            exit 0
+          fi
+          git commit -m "Listas actualizadas $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Refrescar caché de jsDelivr
+        if: success()
+        run: |
+          for f in data/listas.json dist/screening.js; do
+            curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/$f" || true
+          done
